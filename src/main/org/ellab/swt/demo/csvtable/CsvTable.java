@@ -102,7 +102,7 @@ public class CsvTable {
     }
 
     public static void fileToTable(final Table table, final String file) throws IOException {
-        final CSVFormat format = CSVFormat.DEFAULT.withTrim();
+        final CSVFormat format = CSVFormat.DEFAULT.builder().setTrim(true).build();
         final Reader reader = Files.newBufferedReader(Paths.get(file));
         try (final CSVParser csv = new CSVParser(reader, format)) {
             table.setRedraw(false);
