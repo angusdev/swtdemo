@@ -6,6 +6,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
@@ -48,7 +49,7 @@ public class SwtDemo {
         shell.setImage(
                 new Image(shell.getDisplay(), DndDemo.class.getResourceAsStream("/org/ellab/swt/demo/swtdemo.ico")));
         RowLayout rl_shell = new RowLayout(SWT.VERTICAL);
-        rl_shell.fill = true;
+        rl_shell.pack = false;
         shell.setLayout(rl_shell);
 
         Label lblVersion = new Label(shell, SWT.NONE);
@@ -91,6 +92,9 @@ public class SwtDemo {
         btnImageViewer.setImage(new Image(shell.getDisplay(),
                 SwtDemo.class.getResourceAsStream("/org/ellab/swt/demo/imageviewer/imageviewer.ico")));
         btnImageViewer.setText("Image Viewer");
+        Point bSize = btnImageViewer.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+        bSize.y = 64;
+        btnImageViewer.setSize(bSize);
 
         Button btnCsvTable = new Button(shell, SWT.NONE);
         btnCsvTable.addSelectionListener(new SelectionAdapter() {
