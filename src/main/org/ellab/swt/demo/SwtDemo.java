@@ -9,6 +9,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.ellab.swt.demo.csvtable.CsvTable;
 import org.ellab.swt.demo.dnd.DndDemo;
@@ -49,6 +50,9 @@ public class SwtDemo {
         RowLayout rl_shell = new RowLayout(SWT.VERTICAL);
         rl_shell.fill = true;
         shell.setLayout(rl_shell);
+
+        Label lblVersion = new Label(shell, SWT.NONE);
+        lblVersion.setText("SWT Version: " + SWT.getPlatform() + ":" + SWT.getVersion());
 
         Button btnDnd = new Button(shell, SWT.NONE);
         btnDnd.addSelectionListener(new SelectionAdapter() {
