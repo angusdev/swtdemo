@@ -31,9 +31,11 @@ public class MouseDemo {
     private static final int COL_TIME = 0;
     private static final int COL_AREA = 1;
     private static final int COL_EVENT = 2;
-    private static final int COL_X = 3;
-    private static final int COL_Y = 4;
-    private static final int COL_COUNT = 5;
+    private static final int COL_BUTTON = 3;
+    private static final int COL_COUNT = 4;
+    private static final int COL_STATE_MASK = 5;
+    private static final int COL_X = 6;
+    private static final int COL_Y = 7;
 
     private Display display;
     private Shell shell;
@@ -73,9 +75,11 @@ public class MouseDemo {
             ti.setText(COL_TIME, time >= 0 ? "" + new DecimalFormat("0.###").format(time / 1000.f) : "");
             ti.setText(COL_AREA, name);
             ti.setText(COL_EVENT, event + (repeated > 1 ? (" (" + repeated + ")") : ""));
+            ti.setText(COL_BUTTON, "" + e.button);
+            ti.setText(COL_COUNT, "" + e.count);
+            ti.setText(COL_STATE_MASK, "" + e.stateMask);
             ti.setText(COL_X, "" + e.x);
             ti.setText(COL_Y, "" + e.y);
-            ti.setText(COL_COUNT, "" + e.count);
 
             table.setTopIndex(table.getItemCount() - 1);
 
@@ -147,7 +151,7 @@ public class MouseDemo {
         init();
 
         TableUtils.packAllColumns(table, new String[] { "88:88:88.888", "Area 8",
-                "SWT.MouseDoubleClick " + SWT.MouseDoubleClick, "88888", "88888", "888" });
+                "SWT.MouseDoubleClick " + SWT.MouseDoubleClick, "888", "888", "88888888", "88888", "88888" });
     }
 
     public void show() {
@@ -218,16 +222,34 @@ public class MouseDemo {
         tblclmnEvent.setWidth(100);
         tblclmnEvent.setText("Event");
 
-        TableColumn tblclmnX = new TableColumn(table, SWT.NONE);
-        tblclmnX.setWidth(100);
-        tblclmnX.setText("x");
-
-        TableColumn tblclmnY = new TableColumn(table, SWT.NONE);
-        tblclmnY.setWidth(100);
-        tblclmnY.setText("y");
+        TableColumn tblclmnButton = new TableColumn(table, SWT.NONE);
+        tblclmnButton.setWidth(100);
+        tblclmnButton.setText("Button");
+        tblclmnButton.setToolTipText(
+                "the button that was pressed or released; 1 for the first button (usually 'left') 2 for the second button (usually 'middle') 3 for the third button (usually 'right') etc.");
 
         TableColumn tblclmnCount = new TableColumn(table, SWT.NONE);
         tblclmnCount.setWidth(100);
         tblclmnCount.setText("Count");
+        tblclmnCount.setToolTipText(
+                "the number times the mouse has been clicked, as defined by the operating system; 1 for the first click, 2 for the second click and so on.");
+
+        TableColumn tblclmnStateMask = new TableColumn(table, SWT.NONE);
+        tblclmnStateMask.setWidth(100);
+        tblclmnStateMask.setText("State");
+        tblclmnStateMask.setToolTipText(
+                "the state of the keyboard modifier keys and mouse masks at the time the event was generated.");
+
+        TableColumn tblclmnX = new TableColumn(table, SWT.NONE);
+        tblclmnX.setWidth(100);
+        tblclmnX.setText("X");
+        tblclmnX.setToolTipText(
+                "the widget-relative, x coordinate of the pointer at the time the mouse button was pressed or released");
+
+        TableColumn tblclmnY = new TableColumn(table, SWT.NONE);
+        tblclmnY.setWidth(100);
+        tblclmnY.setText("Y");
+        tblclmnY.setToolTipText(
+                "the widget-relative, y coordinate of the pointer at the time the mouse button was pressed or released");
     }
 }
