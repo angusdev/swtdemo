@@ -15,7 +15,7 @@ dependencies {
     //implementation("com.google.guava:guava:30.1.1-jre")
     implementation("org.apache.pdfbox:pdfbox:2.0.25")
     implementation("org.apache.commons:commons-csv:1.9.0")
-    implementation("org.eclipse.platform:org.eclipse.swt.cocoa.macosx.x86_64:3.118.0")
+    implementation("org.eclipse.platform:org.eclipse.swt.$osgi_platform:$swt_version")
 }
 
 configurations.all {
