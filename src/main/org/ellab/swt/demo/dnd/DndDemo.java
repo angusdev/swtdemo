@@ -123,7 +123,6 @@ public class DndDemo {
     private TableColumn tblclmnNewColumn_8;
     private Text textEventData;
     private Combo comboEventData;
-    private Label lblVersion;
     private Button btnSetupDrop;
     private Button btnSetupDrag;
     private Group grpEventDetail;
@@ -174,7 +173,8 @@ public class DndDemo {
         shell.setSize(850, 622);
         shell.setText("Dnd Demo");
         shell.setLayout(new GridLayout(1, false));
-        shell.setImage(new Image(display, DndDemo.class.getResourceAsStream("/org/ellab/swt/demo/dnd/dnddemo-white.ico")));
+        shell.setImage(
+                new Image(display, DndDemo.class.getResourceAsStream("/org/ellab/swt/demo/dnd/dnddemo-white.ico")));
 
         Composite compositeMain = new Composite(shell, SWT.NONE);
         GridLayout gl_compositeMain = new GridLayout(2, false);
@@ -404,6 +404,9 @@ public class DndDemo {
 
         textEventData = new Text(grpEventData, SWT.BORDER | SWT.READ_ONLY | SWT.V_SCROLL | SWT.MULTI | SWT.WRAP);
         textEventData.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        GridData gridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
+        gridData.heightHint = 3 * textEventData.getLineHeight();
+        textEventData.setLayoutData(gridData);
 
         table = new Table(compositeMain, SWT.BORDER | SWT.FULL_SELECTION);
         table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
@@ -448,12 +451,6 @@ public class DndDemo {
         gl_compositeStatusbar.marginWidth = 0;
         compositeStatusbar.setLayout(gl_compositeStatusbar);
         compositeStatusbar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-
-        lblVersion = new Label(compositeStatusbar, SWT.NONE);
-        lblVersion.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-        lblVersion.setText("Java " + System.getProperty("java.version") + ", " + System.getProperty("os.name")
-                + ", SWT " + SWT.getVersion());
-        new Label(compositeStatusbar, SWT.NONE);
     }
 
     private void postInit() {
@@ -509,6 +506,8 @@ public class DndDemo {
         table.removeAll();
         table.setRedraw(true);
         table.setFocus();
+
+        shell.pack();
     }
 
     private void addEventListener() {
@@ -530,13 +529,19 @@ public class DndDemo {
             public void widgetSelected(SelectionEvent e) {
                 final TableItem[] sel = table.getSelection();
                 if (sel != null && sel.length > 0) {
+                    final Color enabledColor = Display.getCurrent().getSystemColor(SWT.COLOR_WIDGET_FOREGROUND);
+                    final Color disabledColor = Display.getCurrent()
+                            .getSystemColor(SWT.COLOR_WIDGET_DISABLED_FOREGROUND);
+
                     final int eventDetail = (int) ((Object[]) sel[0].getData())[1];
-                    lblEventDetailDefault.setEnabled((eventDetail & DND.DROP_DEFAULT) > 0);
-                    lblEventDetailCopy.setEnabled((eventDetail & DND.DROP_COPY) > 0);
-                    lblEventDetailLink.setEnabled((eventDetail & DND.DROP_LINK) > 0);
-                    lblEventDetailMove.setEnabled((eventDetail & DND.DROP_MOVE) > 0);
+                    lblEventDetailDefault
+                            .setForeground((eventDetail & DND.DROP_DEFAULT) > 0 ? enabledColor : disabledColor);
+                    lblEventDetailCopy.setForeground((eventDetail & DND.DROP_COPY) > 0 ? enabledColor : disabledColor);
+                    lblEventDetailLink.setForeground((eventDetail & DND.DROP_LINK) > 0 ? enabledColor : disabledColor);
+                    lblEventDetailMove.setForeground((eventDetail & DND.DROP_MOVE) > 0 ? enabledColor : disabledColor);
 
                     comboEventData.removeAll();
+                    textEventData.setText("");
                     Object dataObj = ((Object[]) sel[0].getData())[2];
                     if (dataObj != null) {
                         Object[] dataArray = null;
@@ -559,12 +564,12 @@ public class DndDemo {
 
                     @SuppressWarnings("unchecked")
                     final Set<String> types = (Set<String>) ((Object[]) sel[0].getData())[3];
-                    lblEventTransferFile.setEnabled(types.contains("File"));
-                    lblEventTransferHTML.setEnabled(types.contains("HTML"));
-                    lblEventTransferImage.setEnabled(types.contains("Image"));
-                    lblEventTransferRTF.setEnabled(types.contains("RTF"));
-                    lblEventTransferText.setEnabled(types.contains("Text"));
-                    lblEventTransferURL.setEnabled(types.contains("URL"));
+                    lblEventTransferFile.setForeground(types.contains("File") ? enabledColor : disabledColor);
+                    lblEventTransferHTML.setForeground(types.contains("HTML") ? enabledColor : disabledColor);
+                    lblEventTransferImage.setForeground(types.contains("Image") ? enabledColor : disabledColor);
+                    lblEventTransferRTF.setForeground(types.contains("RTF") ? enabledColor : disabledColor);
+                    lblEventTransferText.setForeground(types.contains("Text") ? enabledColor : disabledColor);
+                    lblEventTransferURL.setForeground(types.contains("URL") ? enabledColor : disabledColor);
                 }
             }
         });
@@ -649,7 +654,7 @@ public class DndDemo {
         return list.toArray(new Transfer[0]);
     }
 
-    private String transferTypesToString(Transfer[] transfers) {
+    private LinkedHashSet<String> transferTypesToStrings(Transfer[] transfers) {
         final LinkedHashSet<String> types = new LinkedHashSet<>();
 
         Arrays.stream(transfers).forEach(t -> {
@@ -657,15 +662,10 @@ public class DndDemo {
             types.add(splitted[splitted.length - 1].replaceAll("Transfer$", ""));
         });
 
-        if (types.size() > 0) {
-            return String.join(", ", types.toArray(new String[0]));
-        }
-        else {
-            return "";
-        }
+        return types;
     }
 
-    private String transferTypesToString(final Transfer[] transfers, final TransferData[] dataTypes) {
+    private LinkedHashSet<String> transferTypesToStrings(final Transfer[] transfers, final TransferData[] dataTypes) {
         final LinkedHashSet<String> types = new LinkedHashSet<>();
 
         Arrays.stream(transfers).forEach(t -> {
@@ -677,12 +677,7 @@ public class DndDemo {
             });
         });
 
-        if (types.size() > 0) {
-            return String.join(", ", types.toArray(new String[0]));
-        }
-        else {
-            return "";
-        }
+        return types;
     }
 
     private int getDragDropOperations() {
@@ -739,7 +734,7 @@ public class DndDemo {
                     time = fmt.format((now - dropStartTime) / 1000f);
                 }
 
-                final LinkedHashSet<String> types = new LinkedHashSet<>();
+                LinkedHashSet<String> types = new LinkedHashSet<>();
 
                 final TableItem item = new TableItem(table, SWT.NONE);
                 item.setText(COL_SEQ, "" + (table.getItemCount()));
@@ -752,13 +747,14 @@ public class DndDemo {
                     item.setText(COL_DETAIL, detail);
                 }
                 if (event.dataTypes != null && event.dataTypes.length > 0) {
-                    item.setText(COL_TYPE,
-                            transferTypesToString(((DropTarget) event.getSource()).getTransfer(), event.dataTypes));
+                    types = transferTypesToStrings(((DropTarget) event.getSource()).getTransfer(), event.dataTypes);
+                    item.setText(COL_TYPE, String.join(", ", types.toArray(new String[0])));
                 }
                 if (event.data != null) {
                     if (event.data.getClass().isArray()) {
-                        if (((Object[]) event.data).length > 0) {
-                            item.setText(COL_DATA, ((Object[]) event.data)[0].toString());
+                        Object[] dataArr = (Object[]) event.data;
+                        if (dataArr.length > 0) {
+                            item.setText(COL_DATA, "Array[" + dataArr.length + "] " + dataArr[0].toString());
                         }
                     }
                     else {
@@ -892,7 +888,8 @@ public class DndDemo {
                 if (detail != null) {
                     item.setText(COL_DETAIL, detail);
                 }
-                item.setText(COL_TYPE, transferTypesToString(((DragSource) event.getSource()).getTransfer()));
+                item.setText(COL_TYPE, String.join(", ",
+                        transferTypesToStrings(((DragSource) event.getSource()).getTransfer()).toArray(new String[0])));
                 if (event.data != null) {
                     if (event.data.getClass().isArray()) {
                         if (((Object[]) event.data).length > 0) {
