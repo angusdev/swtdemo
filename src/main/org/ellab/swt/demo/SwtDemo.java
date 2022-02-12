@@ -53,7 +53,8 @@ public class SwtDemo {
         shell.setLayout(rl_shell);
 
         Label lblVersion = new Label(shell, SWT.NONE);
-        lblVersion.setText("SWT Version: " + SWT.getPlatform() + ":" + SWT.getVersion());
+        lblVersion.setText("Java " + System.getProperty("java.version") + ", " + System.getProperty("os.name")
+                + ", SWT " + SWT.getPlatform() + ":" + SWT.getVersion());
 
         Button btnDnd = new Button(shell, SWT.NONE);
         btnDnd.addSelectionListener(new SelectionAdapter() {
