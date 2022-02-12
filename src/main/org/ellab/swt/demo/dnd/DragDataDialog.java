@@ -99,10 +99,11 @@ public class DragDataDialog {
     private void init() {
         shlSetupDragData = new Shell(display, SWT.CLOSE | SWT.TITLE | SWT.APPLICATION_MODAL);
         shlSetupDragData.setMinimumSize(new Point(500, 25));
-        shlSetupDragData.setSize(537, 465);
+        shlSetupDragData.setSize(500, 500);
         shlSetupDragData.setText("Setup Drag Data");
         shlSetupDragData.setLayout(new GridLayout(1, false));
-        shlSetupDragData.setImage(new Image(display, DragDataDialog.class.getResourceAsStream("/org/ellab/swt/demo/dnd/dnddemo.ico")));
+        shlSetupDragData.setImage(
+                new Image(display, DragDataDialog.class.getResourceAsStream("/org/ellab/swt/demo/dnd/dnddemo.ico")));
 
         compositeMain = new Composite(shlSetupDragData, SWT.NONE);
         compositeMain.setLayout(new GridLayout(2, false));
