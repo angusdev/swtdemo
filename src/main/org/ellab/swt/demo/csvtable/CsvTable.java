@@ -5,8 +5,6 @@ import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
@@ -26,6 +24,9 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.ellab.swt.utils.TableUtils;
+
+import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvValidationException;
 
 public class CsvTable {
     private Display display;
@@ -58,7 +59,7 @@ public class CsvTable {
                             fileToTable(table, files[0]);
                             TableUtils.packAllColumns(table);
                         }
-                        catch (IOException ex) {
+                        catch (IOException | CsvValidationException ex) {
                             ex.printStackTrace();
                         }
                     }
@@ -89,8 +90,8 @@ public class CsvTable {
         shell.setText("CsvTable");
         shell.setSize(650, 368);
         shell.setLayout(new GridLayout(1, false));
-        shell.setImage(
-                new Image(display, CsvTable.class.getResourceAsStream("/org/ellab/swt/demo/csvtable/csvtable-white.ico")));
+        shell.setImage(new Image(display,
+                CsvTable.class.getResourceAsStream("/org/ellab/swt/demo/csvtable/csvtable-white.ico")));
 
         Label lblNewLabel = new Label(shell, SWT.NONE);
         lblNewLabel.setText("Drop the CSV file to the below table");
@@ -101,10 +102,9 @@ public class CsvTable {
         table.setLinesVisible(true);
     }
 
-    public static void fileToTable(final Table table, final String file) throws IOException {
-        final CSVFormat format = CSVFormat.DEFAULT.builder().setTrim(true).build();
+    public static void fileToTable(final Table table, final String file) throws IOException, CsvValidationException {
         final Reader reader = Files.newBufferedReader(Paths.get(file));
-        try (final CSVParser csv = new CSVParser(reader, format)) {
+        try (final CSVReader csv = new CSVReader(reader)) {
             table.setRedraw(false);
 
             table.removeAll();
@@ -113,20 +113,21 @@ public class CsvTable {
             }
 
             final boolean[] init = new boolean[] { false };
-            csv.getRecords().stream().forEach(r -> {
+            String[] line;
+            while ((line = csv.readNext()) != null) {
                 if (init[0]) {
                     TableItem ti = new TableItem(table, SWT.NONE);
-                    for (int i = 0; i < r.size(); i++) {
-                        ti.setText(i, r.get(i));
+                    for (int i = 0; i < line.length; i++) {
+                        ti.setText(i, line[i]);
                     }
                 }
                 else {
                     init[0] = true;
-                    for (int i = 0; i < r.size(); i++) {
-                        new TableColumn(table, SWT.NONE).setText(r.get(i));
+                    for (int i = 0; i < line.length; i++) {
+                        new TableColumn(table, SWT.NONE).setText(line[i]);
                     }
                 }
-            });
+            }
 
             table.setRedraw(true);
         }
